@@ -4,4 +4,4 @@
 Original / Version #
 
 ### Feature Requests
-Feature / Church - Feature Name
+Feature / Church - Type - Feature Name
