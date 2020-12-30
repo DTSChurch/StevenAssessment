@@ -1,7 +1,7 @@
 # DTS Rock
 
 ### Stock Rock Instances
-Original - Version #
+Original / Version #
 
 ### Feature Requests
-Feature - Church - Type - Feature Name - Clickup Id
+Feature / Church - Type - Feature Name - Clickup Id
