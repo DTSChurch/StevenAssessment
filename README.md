@@ -4,7 +4,7 @@
 Original / Version #
 
 ### Feature Requests
-Church / Type - Feature Name - Rock Version - Rel (Release-1)
+Church / Type - Feature Name - Rock Version - Release - (x)
 
 Example:
 *christchurch/job/WeMissedYou-1.10.3-Release-1*
