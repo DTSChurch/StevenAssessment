@@ -4,4 +4,7 @@
 Original / Version #
 
 ### Feature Requests
-Church / Type - Feature Name - Clickup Id
+Church / Type - Feature Name - Rock Version - Clickup Id
+
+Example:
+*christchurch/job/WeMissedYou-1.10.3-CU-eefw65*
