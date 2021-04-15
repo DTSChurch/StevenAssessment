@@ -10,6 +10,6 @@ Church / Type - Feature Name - Rock Version - Release - (x)
 Church / Type - Feature Name - Rock Version - WIP - (x)
 
 ### Example Branches
-*christchurch/job/WeMissedYou-1.10.3-Release-1*
+*christchurch/job-WeMissedYou-1.10.3-Release-1*
 
-*christchurch/job/WeMissedYou-1.10.3-WIP-2*
+*christchurch/job-WeMissedYou-1.10.3-WIP-2*
