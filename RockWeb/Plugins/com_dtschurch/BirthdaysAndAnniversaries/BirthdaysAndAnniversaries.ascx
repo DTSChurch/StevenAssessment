@@ -11,10 +11,8 @@
                             <Rock:NotificationBox ID="nbWarningMessage" runat="server" NotificationBoxType="Warning" />
                             <Rock:NotificationBox ID="nbEditModeMessage" runat="server" NotificationBoxType="Info" />
                             <Rock:GroupPicker ID="gpGroups" runat="server" Label="Select Group(s)" AllowMultiSelect="true" />
-
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -24,7 +22,6 @@
                     <div class="row">
                         <div class="col-xs-12" style="margin: 0px 0px 0px 0px">
                             <asp:Label Text="Birthday Month Range " runat="server" Font-Bold="true" />
-
                         </div>
 
                         <div class="col-xs-12" style="margin: 10px 0px 10px 0px">
@@ -42,7 +39,6 @@
                                 <asp:ListItem Text="October" Value="10"></asp:ListItem>
                                 <asp:ListItem Text="November" Value="11"></asp:ListItem>
                                 <asp:ListItem Text="December" Value="12"></asp:ListItem>
-
                             </Rock:ButtonDropDownList>
                         </div>
 
@@ -61,10 +57,10 @@
                                 <asp:ListItem Text="October" Value="10"></asp:ListItem>
                                 <asp:ListItem Text="November" Value="11"></asp:ListItem>
                                 <asp:ListItem Text="December" Value="12"></asp:ListItem>
-
                             </Rock:ButtonDropDownList>
                         </div>
                     </div>
+
                     <Rock:BootstrapButton ID="btn_clear" runat="server" OnClick="btn_clear_birthday" Text="Clear" CssClass="btn btn-primary pull-right" ToolTip="Click here to clear all birthday and anniversary months" />
                 </div>
             </div>
@@ -91,13 +87,11 @@
                                 <asp:ListItem Text="October" Value="10"></asp:ListItem>
                                 <asp:ListItem Text="November" Value="11"></asp:ListItem>
                                 <asp:ListItem Text="December" Value="12"></asp:ListItem>
-
                             </Rock:ButtonDropDownList>
-
                         </div>
 
                         <div class="col-xs-12" style="margin: 0px 0px 10px 0px">
-                            <Rock:ButtonDropDownList ID="annDateRangeTo" runat="server" Title="To">
+                            <Rock:ButtonDropDownList ID="annDateRangeTo" runat="server" Title="To" AutoPostBack="true">
                                 <asp:ListItem Text="All" Value="0" Selected="True"></asp:ListItem>
                                 <asp:ListItem Text="January" Value="1"></asp:ListItem>
                                 <asp:ListItem Text="February" Value="2"></asp:ListItem>
@@ -111,10 +105,10 @@
                                 <asp:ListItem Text="October" Value="10"></asp:ListItem>
                                 <asp:ListItem Text="November" Value="11"></asp:ListItem>
                                 <asp:ListItem Text="December" Value="12"></asp:ListItem>
-
                             </Rock:ButtonDropDownList>
                         </div>
                     </div>
+
                     <Rock:BootstrapButton ID="btn_clear2" runat="server" OnClick="btn_clear_anniv" Text="Clear" CssClass="btn btn-primary pull-right" ToolTip="Click here to clear all birthday and anniversary months" />
                 </div>
             </div>
@@ -122,19 +116,18 @@
         </div>
 
         <div class="col-xs-9">
-
             <div class="panel panel-block">
                 <div class="panel-heading">
                     <h1 class="panel-title">Group Member Birthdays & Anniversaries</h1>
                     <Rock:BootstrapButton ID="btn_submit" runat="server" OnClick="btn_submit_Click" Text="Refresh" CssClass="btn btn-primary pull-right" ToolTip="Click here to refresh group member grid on the right" />
                 </div>
-                <div class="panel-body">
 
+                <div class="panel-body">
                     <div class="grid grid-panel">
-                        <%-- <Rock:GridFilter ID="gmFilters" runat="server" OnApplyFilterClick="gmFilters_ApplyFilterClick">
+                        <Rock:GridFilter ID="gmFilters" runat="server" OnApplyFilterClick="gmFilters_ApplyFilterClick">
                             <Rock:DateRangePicker ID="gmBirthdayDateRange" runat="server" Label="Birthday Date Range" />
                              <Rock:DateRangePicker ID="gmAnniversaryDateRange" runat="server" Label="Anniversary Date Range" />
-                        </Rock:GridFilter>--%>
+                        </Rock:GridFilter>
                         <Rock:Grid ID="groupMemberGrid" runat="server" AllowSorting="true" AutoPostBack="false" OnSorting="groupMemberGrid_Sorting">
                             <Columns>
                                 <Rock:RockBoundField DataField="Id" Visible="false" />
@@ -155,7 +148,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </ContentTemplate>
     <Triggers>

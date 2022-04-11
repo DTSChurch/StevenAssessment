@@ -28,7 +28,6 @@ public partial class BirthdaysAndAnniversaries : RockBlock
         {
             BindDropDown();
         }
-
     }
 
     protected override void OnInit(EventArgs e)
@@ -73,15 +72,37 @@ public partial class BirthdaysAndAnniversaries : RockBlock
 
         BindGrid();
     }
-    protected void ClearAnniversary()
+    private void ClearAnniversary()
     {
         annDateRangeFrom.SelectedIndex = 0;
         annDateRangeTo.SelectedIndex = 0;
     }
 
+    private void EnforceDateRanges()
+    {
+        // If either choice is "All" then change the other side of the range to all as well.
+        if (dateRangeTo.SelectedIndex == 0 || dateRangeFrom.SelectedIndex == 0)
+        {
+            dateRangeTo.SelectedIndex = 0;
+            dateRangeFrom.SelectedIndex = 0;
+        }
+
+        if (annDateRangeTo.SelectedIndex == 0 || annDateRangeFrom.SelectedIndex == 0)
+        {
+            annDateRangeTo.SelectedIndex = 0;
+            annDateRangeFrom.SelectedIndex = 0;
+        }
+
+        // If the start date is set to be after the end date, just snap it to the
+        // end date. Do this before applying filters to the groupMembers queryable.
+        if (dateRangeTo.SelectedIndex > 0 && dateRangeFrom.SelectedIndex > dateRangeTo.SelectedIndex)
+            dateRangeFrom.SelectedIndex = dateRangeTo.SelectedIndex;
+        if (annDateRangeTo.SelectedIndex > 0 && annDateRangeFrom.SelectedIndex > annDateRangeTo.SelectedIndex)
+            annDateRangeFrom.SelectedIndex = annDateRangeTo.SelectedIndex;
+    }
+
     private void BindGrid()
     {
-
         var rockContext = new RockContext();
         var groupMemberService = new GroupMemberService(rockContext).Queryable().AsNoTracking();
 
@@ -89,23 +110,17 @@ public partial class BirthdaysAndAnniversaries : RockBlock
         var groupMembers = groupMemberService.Where(gm => groupIdsMulti.Contains(gm.GroupId));
         SortProperty sortProperty = groupMemberGrid.SortProperty;
 
+        EnforceDateRanges();
         groupMembers = FilterByBirthday(groupMembers);
 
         Guid groupLocationTypeValueGuid = Rock.SystemGuid.DefinedValue.GROUP_LOCATION_TYPE_HOME.AsGuid();
         RockUdfHelper.AddressNamePart addressNamePart = RockUdfHelper.AddressNamePart.Full;
 
-      
-
         string addressTypeId = DefinedValueCache.Get(groupLocationTypeValueGuid).Id.ToString();
         string addressComponent = addressNamePart.ConvertToString(false);
 
-
         if (sortProperty != null)
         {
-
-
-
-
             groupMemberGrid.DataSource = groupMembers.Select(gm => new MemberData()
             {
                 FirstName = gm.Person.FirstName,
@@ -143,101 +158,48 @@ public partial class BirthdaysAndAnniversaries : RockBlock
             }).Distinct().OrderBy(s => s.FirstName).ToList();
         }
 
-
         groupMemberGrid.DataBind();
-        
     }
 
     /// <summary>
-    /// Shows the modal alert message.
+    /// Applies filters to group members queryable.
     /// </summary>
-    /// <param name="message">The message.</param>
-    /// <param name="modalAlertType">Type of the modal alert.</param>
+    /// <param name="groupMembers">The group members.</param>
     private IQueryable<GroupMember> FilterByBirthday(IQueryable<GroupMember> groupMembers)
     {
-
-        // When alldropdowns are selected with a value. Here it will show everyone in the date range selected for both birthday and anniversary
-        if (dateRangeFrom.SelectedIndex > 0 && dateRangeTo.SelectedIndex > 0 && annDateRangeFrom.SelectedIndex > 0 && annDateRangeTo.SelectedIndex > 0)
+        // Dynamically build our query based on whether or not the date range selectors have values.
+        //
+        // Indices
+        // ________________
+        // 0:       All
+        // 1-12:    Jan-Dec
+        if (dateRangeFrom.SelectedIndex > 0)
         {
-            int birthdayMonthFrom = int.Parse(dateRangeFrom.SelectedValue);
-            int birthdayMonthTo = int.Parse(dateRangeTo.SelectedValue);
-
-            int annBirthdayMonthFrom = int.Parse(annDateRangeFrom.SelectedValue);
-            int annBirthdayMonthTo = int.Parse(annDateRangeTo.SelectedValue);
-
-            groupMembers = groupMembers.Where(gm => (gm.Person.BirthMonth >= birthdayMonthFrom && gm.Person.BirthMonth <= birthdayMonthTo) || (gm.Person.AnniversaryDate.Value.Month >= annBirthdayMonthFrom && gm.Person.AnniversaryDate.Value.Month <= annBirthdayMonthTo) );
-
+            var dateRangeFromMonth = int.Parse(dateRangeFrom.SelectedValue);
+            groupMembers = groupMembers.Where(gm => gm.Person.BirthMonth >= dateRangeFromMonth);
         }
 
-        if (dateRangeFrom.SelectedIndex == 0 && dateRangeTo.SelectedIndex == 0)
+        if (dateRangeTo.SelectedIndex > 0)
         {
-
-        }
-        else if (dateRangeFrom.SelectedIndex != 0 && dateRangeTo.SelectedIndex <= 0)
-        {
-            if (dateRangeFrom.SelectedIndex != -1)
-            {
-                int birthdayMonthFrom = int.Parse(dateRangeFrom.SelectedValue);
-                groupMembers = groupMembers.Where(gm => gm.Person.BirthMonth == birthdayMonthFrom);
-            }
-        }
-        else if (dateRangeFrom.SelectedIndex <= 0 && dateRangeTo.SelectedIndex != 0)
-        {
-            if (dateRangeTo.SelectedIndex != -1)
-            {
-                int birthdayMonthTo = int.Parse(dateRangeTo.SelectedValue);
-                groupMembers = groupMembers.Where(gm => gm.Person.BirthMonth == birthdayMonthTo);
-            }
-        }
-        else if (dateRangeFrom.SelectedIndex != 0 && dateRangeTo.SelectedIndex != 0)
-        {
-            if (dateRangeFrom.SelectedIndex > 0 && dateRangeTo.SelectedIndex >= 0)
-            {
-                int birthdayMonthFrom = int.Parse(dateRangeFrom.SelectedValue);
-                int birthdayMonthTo = int.Parse(dateRangeTo.SelectedValue);
-                groupMembers = groupMembers.Where(gm => gm.Person.BirthMonth >= birthdayMonthFrom && gm.Person.BirthMonth <= birthdayMonthTo);
-            }
+            var dateRangeToMonth = int.Parse(dateRangeTo.SelectedValue);
+            groupMembers = groupMembers.Where(gm => gm.Person.BirthMonth <= dateRangeToMonth);
         }
 
+        if (annDateRangeFrom.SelectedIndex > 0)
+        {
+            var annDateRangeFromMonth = int.Parse(annDateRangeFrom.SelectedValue);
+            groupMembers = groupMembers.Where(gm => gm.Person.AnniversaryDate.Value.Month >= annDateRangeFromMonth);
+        }
 
-        if (annDateRangeFrom.SelectedIndex == 0 && annDateRangeTo.SelectedIndex == 0)
+        if (annDateRangeTo.SelectedIndex > 0)
         {
-
-        }
-        else if (annDateRangeFrom.SelectedIndex != 0 && annDateRangeTo.SelectedIndex <= 0)
-        {
-            if (annDateRangeFrom.SelectedIndex != -1)
-            {
-                int birthdayMonthFrom = int.Parse(annDateRangeFrom.SelectedValue);
-                groupMembers = groupMembers.Where(gm => gm.Person.AnniversaryDate.Value.Month == birthdayMonthFrom);
-            }
-        }
-        else if (annDateRangeFrom.SelectedIndex <= 0 && annDateRangeTo.SelectedIndex != 0)
-        {
-            if (annDateRangeTo.SelectedIndex != -1)
-            {
-                int birthdayMonthTo = int.Parse(annDateRangeTo.SelectedValue);
-                groupMembers = groupMembers.Where(gm => gm.Person.AnniversaryDate.Value.Month == birthdayMonthTo);
-            }
-        }
-        else if (dateRangeFrom.SelectedIndex == 0 && dateRangeTo.SelectedIndex != 0)
-        {
-            int birthdayMonthTo = int.Parse(dateRangeTo.SelectedValue);
-            groupMembers = groupMembers.Where(gm => gm.Person.AnniversaryDate.Value.Month == birthdayMonthTo);
-        }
-        else if (annDateRangeFrom.SelectedIndex != 0 && annDateRangeTo.SelectedIndex != 0)
-        {
-            if (annDateRangeFrom.SelectedIndex > 0 && annDateRangeTo.SelectedIndex >= 0)
-            {
-                int birthdayMonthFrom = int.Parse(annDateRangeFrom.SelectedValue);
-                int birthdayMonthTo = int.Parse(annDateRangeTo.SelectedValue);
-                groupMembers = groupMembers.Where(gm => gm.Person.AnniversaryDate.Value.Month >= birthdayMonthFrom && gm.Person.AnniversaryDate.Value.Month <= birthdayMonthTo);
-            }
+            var annDateRangeToMonth = int.Parse(annDateRangeTo.SelectedValue);
+            groupMembers = groupMembers.Where(gm => gm.Person.AnniversaryDate.Value.Month <= annDateRangeToMonth);
         }
 
         return groupMembers;
     }
-    
+
     protected void groupMemberGrid_Sorting(object sender, GridViewSortEventArgs e)
     {
         BindGrid();
@@ -245,8 +207,8 @@ public partial class BirthdaysAndAnniversaries : RockBlock
 
     protected void gmFilters_ApplyFilterClick(object sender, EventArgs e)
     {
-        //gmFilters.SaveUserPreference( "gmBirthdayDateRange", "Birthday Date Range", gmBirthdayDateRange.DelimitedValues );
-        //gmFilters.SaveUserPreference( "gmAnniversaryDateRange", "Anniversary Date Range", gmAnniversaryDateRange.DelimitedValues );
+        gmFilters.SaveUserPreference("gmBirthdayDateRange", "Birthday Date Range", gmBirthdayDateRange.DelimitedValues );
+        gmFilters.SaveUserPreference("gmAnniversaryDateRange", "Anniversary Date Range", gmAnniversaryDateRange.DelimitedValues );
         BindGrid();
     }
 }
