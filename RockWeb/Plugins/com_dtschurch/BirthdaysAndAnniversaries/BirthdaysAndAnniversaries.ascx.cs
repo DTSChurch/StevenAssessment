@@ -229,6 +229,21 @@ internal class MemberData
     public string Address { get; internal set; }
     public string LastName { get; internal set; }
 
+    public string Domain
+    {
+        get
+        {
+            try
+            {
+                return this.Email.Split('@')[1];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return null;
+            }
+        }
+    }
+
     public MemberData()
     {
     }
